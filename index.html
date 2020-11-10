@@ -3,29 +3,39 @@
 	<head>
 		<title>Lineage 2 - помошник выбора класса</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link href="https://fonts.googleapis.com/css2?family=Amatic+SC&amp;display=swap" rel="stylesheet">
 		<style type="text/css">
-			/*html, body {
-				height: 100%;
-				margin: 1em;
-			}*/
 			body {
-				font-family: 'Amatic SC', cursive;
 				font-size: 16px;
 				background: #222836;
 				color: #e2e2e2;
-				/*display: flex;
-				justify-content: center;
-				align-items: center;*/
-			}
-			.disabled {
-				opacity: 0.1;
 			}
 
-			#options img,
+			#options > div {
+				display: inline-block;
+				position: relative;
+			}
+
+			#options > div:after {
+				content: '';
+				position: absolute;
+				top: 2px;
+				right: 2px;
+				background: #fff;
+				color: #000;
+			}
+
+			#options > div,
 			button {
 				cursor: pointer;
 			}
+
+			div[data-value="0"] {opacity: 0.1}
+
+			/*#options > div[data-value="1"]:after {content: '1';}
+			#options > div[data-value="2"]:after {content: '2';}
+			#options > div[data-value="3"]:after {content: '3';}
+			#options > div[data-value="4"]:after {content: '4';}
+			#options > div[data-value="5"]:after {content: '5';}*/
 		</style>
 	</head>
 	<body>
@@ -40,7 +50,8 @@
 		</p>
 		<div id="options"></div>
 		<p>
-			<button type="button" id="run">ага</button>
+			<button type="button" id="dice">кинуть жребий</button>
+			<button type="button" id="run">выбрать класс</button>
 		</p>
 		<div id="result"></div>
 		<script type="text/javascript">
@@ -51,7 +62,19 @@
 			const onSettingClick = (e, id) => {
 				e.preventDefault();
 
-				classes[id].disabled = !classes[id].disabled;
+				const cl = classes[id];
+
+				cl.value = cl.value === 0 ? 3 : 0;
+				renderOptions();
+			};
+			const onSettingRightClick = (e, id) => {
+				e.preventDefault();
+
+				const cl = classes[id];
+
+				cl.value = cl.value === 0 ? 0 : (
+					cl.value < 5 ? cl.value + 1 : 1
+				);
 				renderOptions();
 			};
 
@@ -60,17 +83,17 @@
 
 			const renderOptions = () => {
 				const $docFrag = document.createDocumentFragment();
-				const images = classes.forEach(({title, imgName, race, disabled = false}, id) => {
+				const images = classes.forEach(({title, imgName, race, value = 3}, id) => {
+					const imgWrap = document.createElement('div');
 					const img = document.createElement('img');
 
 					img.src = imgPrefix + imgName + imgAffix;
+					imgWrap.dataset.value = value;
 
-					if (disabled) {
-						img.classList.add('disabled');
-					}
-
-					img.addEventListener('click', e => onSettingClick(e, id), false);
-					$docFrag.appendChild(img);
+					imgWrap.addEventListener('click', e => onSettingClick(e, id), false);
+					imgWrap.addEventListener('contextmenu', e => onSettingRightClick(e, id), false);
+					imgWrap.appendChild(img);
+					$docFrag.appendChild(imgWrap);
 				});
 
 				$options.innerHTML = '';
@@ -80,7 +103,7 @@
 			renderOptions();
 
 			function random() {
-				const arr = classes.filter(({disabled}) => !disabled);
+				const arr = classes.filter(({value}) => value !== 0);
 				const randIndex = Math.floor(Math.random() * arr.length);
 				const {imgName} = arr[randIndex];
 
@@ -96,13 +119,17 @@
 
 			document.querySelector('#selectAll').addEventListener('click', () => {
 				for (let i = 0; i < classes.length; i++) {
-					classes[i].disabled = false;
+					const cl = classes[i];
+
+					cl.value = cl.value || 3;
 				}
 				renderOptions();
 			}, false);
 			document.querySelector('#disableAll').addEventListener('click', () => {
 				for (let i = 0; i < classes.length; i++) {
-					classes[i].disabled = true;
+					const cl = classes[i];
+
+					cl.value = 0;
 				}
 				renderOptions();
 			}, false);
@@ -113,7 +140,7 @@
 				for (let i = 0; i < classes.length; i++) {
 					const cl = classes[i];
 
-					cl.disabled = typeof arr.find(n => n === cl.imgName) === 'undefined';
+					cl.value = typeof arr.find(n => n === cl.imgName) === 'undefined' ? 0 : (cl.value || 3);
 				}
 				renderOptions();
 			};
@@ -134,6 +161,11 @@
 				selectArr(["human_paladin","human_dark_avenger","elf_temple_knight","darkelf_shillien_knight","darkelf_bladedancer","elf_swordsinger"])
 			}, false);
 
+			document.querySelector('#dice').addEventListener('click', () => {
+				const val = Math.floor(Math.random() * 100) + 1;
+
+				alert(val + ' из 100');
+			}, false);
 			document.querySelector('#run').addEventListener('click', random, false);
 		</script>
 	</body>
