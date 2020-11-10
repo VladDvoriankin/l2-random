@@ -19,11 +19,22 @@
 			#options > div:after {
 				content: '';
 				position: absolute;
-				top: 2px;
-				right: 2px;
-				background: #fff;
+				top: 3px;
+				right: 4px;
+				font-weight: bold;
 				color: #000;
+				background: #fff;
+				padding: 2px 4px;
 			}
+
+			div[data-value="-99"] {opacity: 0.05}
+			div[data-value="0"] {opacity: 0.2}
+
+			#options > div[data-value="1"]:after {content: '-2';color: red;}
+			#options > div[data-value="2"]:after {content: '-1';color: red}
+			/*#options > div[data-value="3"]:after {content: '3';}*/
+			#options > div[data-value="4"]:after {content: '+1';color: green}
+			#options > div[data-value="5"]:after {content: '+2';color: green}
 
 			#options > div,
 			button {
@@ -39,29 +50,22 @@
 				font-size: 1.3em;
 				margin-right: 5px;
 				margin-bottom: 5px;
-				text-transform: uppercase;
+				/*text-transform: uppercase;*/
 			}
 
-			div[data-value="0"] {opacity: 0.1}
-
-			/*#options > div[data-value="1"]:after {content: '1';}
-			#options > div[data-value="2"]:after {content: '2';}
-			#options > div[data-value="3"]:after {content: '3';}
-			#options > div[data-value="4"]:after {content: '4';}
-			#options > div[data-value="5"]:after {content: '5';}*/
 
 			#run {margin-bottom: 1em;}
 		</style>
 	</head>
 	<body>
 		<p>
-			<button type="button" id="disableAll">УБРАТЬ ВСЕХ</button>
-			<button type="button" id="selectMelee">МИЛИКИ</button>
-			<button type="button" id="selectRange">РЭНДЖИ</button>
-			<button type="button" id="selectSummoners">САМОННЕРЫ</button>
-			<button type="button" id="selectBuffers">БАФФЕРЫ</button>
-			<button type="button" id="selectTankers">ТАНКИ</button>
-			<button type="button" id="selectAll">ВЫБРАТЬ ВСЕХ</button>
+			<button type="button" id="disableAll">убрать всех</button>
+			<button type="button" id="selectAll">выбрать всех</button>
+			<button type="button" id="selectMelee">милики</button>
+			<button type="button" id="selectRange">рэнджи</button>
+			<button type="button" id="selectSummoners">самоннеры</button>
+			<button type="button" id="selectBuffers">бафферы</button>
+			<button type="button" id="selectTankers">танки</button>
 		</p>
 		<div id="options"></div>
 		<p>
@@ -91,9 +95,18 @@
 
 				const cl = classes[id];
 
-				cl.value = cl.value === 0 ? 0 : (
-					cl.value < 5 ? cl.value + 1 : 1
-				);
+				if (cl.value === 0) {
+					return;
+				}
+
+				if (typeof cl.value === 'undefined') {
+					cl.value = 4;
+				} else if (cl.value < 5) {
+					cl.value = cl.value + 1;
+				} else {
+					cl.value = 1;
+				}
+
 				renderOptions();
 			};
 
@@ -121,33 +134,43 @@
 			renderOptions();
 
 			function random(e) {
-				const arr = classes.filter(({value}) => value !== 0);
+				const arr = [];
+
+				classes.forEach(({value}, index) => {
+					const v = typeof value === 'undefined' ? 3 : value;
+
+					if (v !== 0) {
+						for (let i = 0; i < v; i++) {
+							arr.push(index);
+						}
+					}
+				});
 
 				if (arr.length === 0) return;
 
 				classChosen = true;
 
-				const randIndex = Math.floor(Math.random() * arr.length);
-				const {imgName, title} = arr[randIndex];
+				const rand = Math.floor(Math.random() * arr.length);
+				const randIndex = arr[rand];
+				const {imgName, title} = classes[randIndex];
+
+				document.querySelectorAll('button').forEach(b => {b.disabled = 'disabled'});
 
 				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
 
-				document.querySelectorAll('button').forEach(b => {b.disabled = 'disabled'});
-
-				console.log(arr, randIndex, imgName)
+				console.log('rand', rand);
+				console.log('arr', arr);
+				console.log('randIndex from arr', randIndex);
+				console.log('class obj', classes[randIndex]);
 
 				for (let i = 0; i < classes.length; i++) {
 					const cl = classes[i];
 
-					cl.value = cl.imgName === imgName ? cl.value : 0;
+					cl.value = cl.imgName === imgName ? cl.value : -99;
 				}
 
 				renderOptions();
-
-				setTimeout(() => {
-					window.scrollTo(0, 0);
-				}, 0)
 			}
 
 			document.querySelector('#selectAll').addEventListener('click', () => {
