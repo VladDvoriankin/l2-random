@@ -8,6 +8,7 @@
 				font-size: 16px;
 				background: #222836;
 				color: #e2e2e2;
+				text-align: center;
 			}
 
 			#options > div {
@@ -29,8 +30,22 @@
 				cursor: pointer;
 			}
 
+			button {
+				font-size: 1.3em;
+				margin-right: 5px;
+				margin-bottom: 5px;
+				text-transform: uppercase;
+			}
+
+			#result {
+				display: none;
+				margin: 10em 0;
+			}
+
 			div[data-value="0"] {opacity: 0.1}
 
+
+			#run {margin-bottom: 1em;}
 			/*#options > div[data-value="1"]:after {content: '1';}
 			#options > div[data-value="2"]:after {content: '2';}
 			#options > div[data-value="3"]:after {content: '3';}
@@ -40,18 +55,18 @@
 	</head>
 	<body>
 		<p>
-			<button type="button" id="disableAll">убрать все</button>
-			<button type="button" id="selectMelee">выбрать милишников</button>
-			<button type="button" id="selectRange">выбрать ренджей</button>
-			<button type="button" id="selectSummoners">выбрать саммонеров</button>
-			<button type="button" id="selectBuffers">выбрать бафферов</button>
-			<button type="button" id="selectTankers">выбрать танков</button>
-			<button type="button" id="selectAll">выбрать все</button>
+			<button type="button" id="disableAll">УБРАТЬ ВСЕХ</button>
+			<button type="button" id="selectMelee">МИЛИКИ</button>
+			<button type="button" id="selectRange">РЭНДЖИ</button>
+			<button type="button" id="selectSummoners">САМОННЕРЫ</button>
+			<button type="button" id="selectBuffers">БАФФЕРЫ</button>
+			<button type="button" id="selectTankers">ТАНКИ</button>
+			<button type="button" id="selectAll">ВЫБРАТЬ ВСЕХ</button>
 		</p>
 		<div id="options"></div>
 		<p>
 			<button type="button" id="dice">кинуть жребий</button>
-			<button type="button" id="run">выбрать класс</button>
+			<button type="button" id="run">погнали!</button>
 		</p>
 		<div id="result"></div>
 		<script type="text/javascript">
@@ -109,6 +124,9 @@
 
 				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
+
+				document.querySelectorAll('button').forEach(b => {b.disabled = 'disabled'});
+
 				console.log(arr, randIndex, imgName)
 
 				const img = document.createElement('img');
@@ -117,6 +135,11 @@
 
 				$result.innerHTML = '';
 				$result.appendChild(img);
+				$result.style.display = 'block'
+
+				setTimeout(() => {
+					window.scrollTo(0, window.outerHeight);
+				}, 0)
 			}
 
 			document.querySelector('#selectAll').addEventListener('click', () => {
