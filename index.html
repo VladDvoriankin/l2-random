@@ -102,11 +102,13 @@
 
 			renderOptions();
 
-			function random() {
+			function random(e) {
 				const arr = classes.filter(({value}) => value !== 0);
 				const randIndex = Math.floor(Math.random() * arr.length);
-				const {imgName} = arr[randIndex];
+				const {imgName, title} = arr[randIndex];
 
+				e.target.innerHTML = title.toUpperCase();
+				e.target.disabled = 'disabled';
 				console.log(arr, randIndex, imgName)
 
 				const img = document.createElement('img');
@@ -161,10 +163,13 @@
 				selectArr(["human_paladin","human_dark_avenger","elf_temple_knight","darkelf_shillien_knight","darkelf_bladedancer","elf_swordsinger"])
 			}, false);
 
-			document.querySelector('#dice').addEventListener('click', () => {
+			document.querySelector('#dice').addEventListener('click', e => {
 				const val = Math.floor(Math.random() * 100) + 1;
 
-				alert(val + ' из 100');
+				e.target.disabled = 'disabled';
+				e.target.innerHTML = val + ' из 100';
+
+				alert(val + ' из 100')
 			}, false);
 			document.querySelector('#run').addEventListener('click', random, false);
 		</script>
