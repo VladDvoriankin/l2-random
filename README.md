@@ -1,2 +1,2 @@
-# l2-random.github.io
+# l2-random
 l2 randomizer
