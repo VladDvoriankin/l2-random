@@ -37,20 +37,16 @@
 				text-transform: uppercase;
 			}
 
-			#result {
-				display: none;
-				margin: 10em 0;
-			}
-
 			div[data-value="0"] {opacity: 0.1}
 
-
-			#run {margin-bottom: 1em;}
 			/*#options > div[data-value="1"]:after {content: '1';}
 			#options > div[data-value="2"]:after {content: '2';}
 			#options > div[data-value="3"]:after {content: '3';}
 			#options > div[data-value="4"]:after {content: '4';}
 			#options > div[data-value="5"]:after {content: '5';}*/
+
+
+			#run {margin-bottom: 1em;}
 		</style>
 	</head>
 	<body>
@@ -68,7 +64,6 @@
 			<button type="button" id="dice">кинуть жребий</button>
 			<button type="button" id="run">погнали!</button>
 		</p>
-		<div id="result"></div>
 		<script type="text/javascript">
 			const imgPrefix = 'https://l2db.ru/themes/l2db/images/classes/';
 			const imgAffix = '.png';
@@ -94,7 +89,6 @@
 			};
 
 			const $options = document.querySelector('#options');
-			const $result = document.querySelector('#result');
 
 			const renderOptions = () => {
 				const $docFrag = document.createDocumentFragment();
@@ -122,6 +116,8 @@
 				const randIndex = Math.floor(Math.random() * arr.length);
 				const {imgName, title} = arr[randIndex];
 
+
+
 				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
 
@@ -129,16 +125,16 @@
 
 				console.log(arr, randIndex, imgName)
 
-				const img = document.createElement('img');
+				for (let i = 0; i < classes.length; i++) {
+					const cl = classes[i];
 
-				img.src = imgPrefix + imgName + imgAffix;
+					cl.value = cl.imgName === imgName ? cl.value : 0;
+				}
 
-				$result.innerHTML = '';
-				$result.appendChild(img);
-				$result.style.display = 'block'
+				renderOptions();
 
 				setTimeout(() => {
-					window.scrollTo(0, window.outerHeight);
+					window.scrollTo(0, 0);
 				}, 0)
 			}
 
