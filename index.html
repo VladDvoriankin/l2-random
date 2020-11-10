@@ -6,9 +6,9 @@
 		<style type="text/css">
 			body {
 				font-size: 16px;
-				background: #222836;
-				color: #e2e2e2;
+				background: #fff;
 				text-align: center;
+				user-select: none;
 			}
 
 			#options > div {
@@ -30,6 +30,11 @@
 				cursor: pointer;
 			}
 
+			img {
+				pointer-events: none;
+				user-select: none;
+			}
+
 			button {
 				font-size: 1.3em;
 				margin-right: 5px;
@@ -44,7 +49,6 @@
 			#options > div[data-value="3"]:after {content: '3';}
 			#options > div[data-value="4"]:after {content: '4';}
 			#options > div[data-value="5"]:after {content: '5';}*/
-
 
 			#run {margin-bottom: 1em;}
 		</style>
@@ -65,12 +69,15 @@
 			<button type="button" id="run">погнали!</button>
 		</p>
 		<script type="text/javascript">
+			let classChosen = false;
 			const imgPrefix = 'https://l2db.ru/themes/l2db/images/classes/';
 			const imgAffix = '.png';
 			const classes = [{"title":"berserker","imgName":"kamael_berserker","race":"kamael"},{"title":"soul breaker","imgName":"kamael_soul_breaker","race":"kamael"},{"title":"arbalester","imgName":"kamael_arbalester","race":"kamael"},{"title":"warlord","imgName":"human_warlord","race":"human"},{"title":"gladiator","imgName":"human_gladiator","race":"human"},{"title":"paladin","imgName":"human_paladin","race":"human"},{"title":"dark avenger","imgName":"human_dark_avenger","race":"human"},{"title":"treasure hunter","imgName":"human_treasure_hunter","race":"human"},{"title":"hawkeye","imgName":"human_hawkeye","race":"human"},{"title":"sorcerer","imgName":"human_sorcerer","race":"human"},{"title":"necromancer","imgName":"human_necromancer","race":"human"},{"title":"warlock","imgName":"human_warlock","race":"human"},{"title":"bishop","imgName":"human_bishop","race":"human"},{"title":"prophet","imgName":"human_prophet","race":"human"},{"title":"swordsinger","imgName":"elf_swordsinger","race":"elf"},{"title":"temple knight","imgName":"elf_temple_knight","race":"elf"},{"title":"plainswalker","imgName":"elf_plainswalker","race":"elf"},{"title":"silver ranger","imgName":"elf_silver_ranger","race":"elf"},{"title":"elemental summoner","imgName":"elf_elemental_summoner","race":"elf"},{"title":"spellsinger","imgName":"elf_spellsinger","race":"elf"},{"title":"elder","imgName":"elf_elder","race":"elf"},{"title":"destroyer","imgName":"orc_destroyer","race":"orc"},{"title":"tyrant","imgName":"orc_tyrant","race":"orc"},{"title":"overlord","imgName":"orc_overlord","race":"orc"},{"title":"warcryer","imgName":"orc_warcryer","race":"orc"},{"title":"shillien knight","imgName":"darkelf_shillien_knight","race":"darkelf"},{"title":"bladedancer","imgName":"darkelf_bladedancer","race":"darkelf"},{"title":"abyss walker","imgName":"darkelf_abyss_walker","race":"darkelf"},{"title":"phantom ranger","imgName":"darkelf_phantom_ranger","race":"darkelf"},{"title":"spellhowler","imgName":"darkelf_spellhowler","race":"darkelf"},{"title":"phantom summoner","imgName":"darkelf_phantom_summoner","race":"darkelf"},{"title":"shillien elder","imgName":"darkelf_shillien_elder","race":"darkelf"},{"title":"bounty hunter","imgName":"dwarf_bounty_hunter","race":"dwarf"},{"title":"warsmith","imgName":"dwarf_warsmith","race":"dwarf"}];
 
 			const onSettingClick = (e, id) => {
 				e.preventDefault();
+
+				if(classChosen) return;
 
 				const cl = classes[id];
 
@@ -79,6 +86,8 @@
 			};
 			const onSettingRightClick = (e, id) => {
 				e.preventDefault();
+
+				if(classChosen) return;
 
 				const cl = classes[id];
 
@@ -113,10 +122,13 @@
 
 			function random(e) {
 				const arr = classes.filter(({value}) => value !== 0);
+
+				if (arr.length === 0) return;
+
+				classChosen = true;
+
 				const randIndex = Math.floor(Math.random() * arr.length);
 				const {imgName, title} = arr[randIndex];
-
-
 
 				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
@@ -187,9 +199,8 @@
 
 				e.target.disabled = 'disabled';
 				e.target.innerHTML = val + ' из 100';
-
-				alert(val + ' из 100')
 			}, false);
+
 			document.querySelector('#run').addEventListener('click', random, false);
 		</script>
 	</body>
