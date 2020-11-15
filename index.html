@@ -211,7 +211,6 @@
 
 				document.querySelectorAll('button').forEach(b => {b.disabled = 'disabled'});
 
-				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
 
 				if (window._debug = true) {
@@ -230,6 +229,7 @@
 				}
 
 				animateResult(classes, () => {
+					e.target.innerHTML = title.toUpperCase();
 					renderOptions(classes.map((item, index) => {
 						item.value = randIndex === index ? originalValues[index] : -99;
 						return item;
