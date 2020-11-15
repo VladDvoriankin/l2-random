@@ -18,6 +18,7 @@
 
 			#options > div:after {
 				content: '';
+				font-family: monospace;
 				position: absolute;
 				top: 3px;
 				right: 4px;
@@ -30,11 +31,11 @@
 			div[data-value="-99"] {opacity: 0.05}
 			div[data-value="0"] {opacity: 0.2}
 
-			#options > div[data-value="1"]:after {content: '-2';color: red;}
-			#options > div[data-value="2"]:after {content: '-1';color: red}
+			#options > div[data-value="1"]:after {content: '--';color: red;}
+			#options > div[data-value="2"]:after {content: '-';color: red}
 			/*#options > div[data-value="3"]:after {content: '3';}*/
-			#options > div[data-value="4"]:after {content: '+1';color: green}
-			#options > div[data-value="5"]:after {content: '+2';color: green}
+			#options > div[data-value="4"]:after {content: '+';color: green}
+			#options > div[data-value="5"]:after {content: '++';color: green}
 
 			#options > div,
 			button {
@@ -50,7 +51,6 @@
 				font-size: 1.3em;
 				margin-right: 5px;
 				margin-bottom: 5px;
-				/*text-transform: uppercase;*/
 			}
 
 
@@ -111,10 +111,11 @@
 			};
 
 			const $options = document.querySelector('#options');
+			const $renderedOptions = [];
 
-			const renderOptions = () => {
+			const renderOptions = customArray => {
 				const $docFrag = document.createDocumentFragment();
-				const images = classes.forEach(({title, imgName, race, value = 3}, id) => {
+				const images = (customArray || classes).forEach(({title, imgName, race, value = 3}, id) => {
 					const imgWrap = document.createElement('div');
 					const img = document.createElement('img');
 
@@ -132,6 +133,60 @@
 			};
 
 			renderOptions();
+
+			function animation1(arr, delay, length, callback, currentIndex = 0) {
+				if (currentIndex >= length) {
+					callback();
+					return;
+				}
+
+				renderOptions(arr.map((item, index) => {
+					item.value = index === currentIndex ? 3 : -99;
+					return item;
+				}));
+
+				setTimeout(() => {
+					animation1(arr, delay, length, callback, currentIndex + 1)
+				}, delay);
+			}
+
+			function animation2(arr, delay, length, callback, currentIndex = 0) {
+				if (currentIndex >= length) {
+					callback();
+					return;
+				}
+
+				const randomIndex = Math.floor(Math.random() * arr.length);
+
+				renderOptions(arr.map((item, index) => {
+					item.value = index === randomIndex ? 3 : -99;
+					return item;
+				}));
+
+				setTimeout(() => {
+					animation2(arr, delay, length, callback, currentIndex + 1)
+				}, delay);
+			}
+
+			function animateResult(arr, callback) {
+				animation1(arr, 25, arr.length, () => {
+					animation1(arr, 15, arr.length, () => {
+						animation2(arr, 80, arr.length/2, () => {
+							animation2(arr, 160, arr.length/2, () => {
+								animation2(arr, 150, 3, () => {
+									animation2(arr, 200, 3, () => {
+										animation2(arr, 350, 4, () => {
+											animation2(arr, 500, 2, () => {
+												callback();
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				});
+			}
 
 			function random(e) {
 				const arr = [];
@@ -159,10 +214,14 @@
 				e.target.innerHTML = title.toUpperCase();
 				e.target.disabled = 'disabled';
 
-				console.log('rand', rand);
-				console.log('arr', arr);
-				console.log('randIndex from arr', randIndex);
-				console.log('class obj', classes[randIndex]);
+				if (window._debug = true) {
+					console.log('rand', rand);
+					console.log('arr', arr);
+					console.log('randIndex from arr', randIndex);
+					console.log('class obj', classes[randIndex]);
+				}
+				
+				const originalValues = classes.map(item => item.value);
 
 				for (let i = 0; i < classes.length; i++) {
 					const cl = classes[i];
@@ -170,7 +229,12 @@
 					cl.value = cl.imgName === imgName ? cl.value : -99;
 				}
 
-				renderOptions();
+				animateResult(classes, () => {
+					renderOptions(classes.map((item, index) => {
+						item.value = randIndex === index ? originalValues[index] : -99;
+						return item;
+					}));
+				});
 			}
 
 			document.querySelector('#selectAll').addEventListener('click', () => {
